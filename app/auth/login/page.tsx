@@ -36,7 +36,7 @@ export default function LoginPage() {
     if (isLoggedIn) {
       router.push("/auth/dashboard"); // redirect to dashboard if already logged in
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, router]);
 
   const handleSocialOauth = async (provider: "google" | "github") => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -124,7 +124,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center mt-3">
-          Dont have an account? <a href="/auth/register">Register</a>
+          Don&apos;t have an account? <a href="/auth/register">Register</a>
         </p>
       </div>
 

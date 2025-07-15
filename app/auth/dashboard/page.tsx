@@ -2,7 +2,7 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/SupabaseClient";
 import { myAppHook } from "@/context/AppUtils";
 import toast from "react-hot-toast";
@@ -53,20 +53,23 @@ export default function DashboardPage() {
     resolver: yupResolver(formSchema),
   });
 
-  const fetchProductsFromTable = async (userId: string) => {
-    setIsLaoding(true);
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .eq("user_id", userId);
+  const fetchProductsFromTable = useCallback(
+    async (userId: string) => {
+      setIsLaoding(true);
+      const { data } = await supabase
+        .from("products")
+        .select("*")
+        .eq("user_id", userId);
 
-    if (data) {
-      setProducts(data as ProductType[]);
-    } else {
-      setProducts([]);
-    }
-    setIsLaoding(false);
-  };
+      if (data) {
+        setProducts(data as ProductType[]);
+      } else {
+        setProducts([]);
+      }
+      setIsLaoding(false);
+    },
+    [setIsLaoding]
+  );
 
   // store token in session stoarage
   useEffect(() => {
@@ -124,7 +127,15 @@ export default function DashboardPage() {
       router.push("/auth/login");
       return;
     }
-  }, []);
+  }, [
+    isLoggedIn,
+    router,
+    setAuthToken,
+    setIsLoggedIn,
+    setUserProfile,
+    setIsLaoding,
+    fetchProductsFromTable,
+  ]);
   // functio to upload to store in the supabase
   const uploadImageFile = async (file: File) => {
     const fileExtension = file.name.split(".").pop();
